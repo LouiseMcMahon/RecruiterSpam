@@ -4,9 +4,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-pug');
 	grunt.loadNpmTasks('grunt-browserify');
-	grunt.loadNpmTasks('grunt-exorcise');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-
+	grunt.loadNpmTasks('grunt-concurrent');
 
 	grunt.initConfig({
 		sass: {
@@ -92,8 +91,38 @@ module.exports = function (grunt) {
 					'./frontend/build/js/main.js': './frontend/build/js/main.js'
 				}
 			}
+		},
+		watch: {
+			scripts: {
+				files: ['./frontend/src/js/*.js'],
+				tasks: ['browserify:dev'],
+				options: {
+					interrupt: true,
+				},
+			},
+			scss: {
+				files: ['./frontend/src/scss/*.js'],
+				tasks: ['sass:dev'],
+				options: {
+					interrupt: true,
+				},
+			},
+			pug: {
+				files: ['./frontend/src/pug/*.js'],
+				tasks: ['pug:compile'],
+				options: {
+					interrupt: true,
+				},
+			}
+		},
+		concurrent: {
+			watch: ['watch:scripts', 'watch:scss', 'watch:pug'],
 		}
 	});
+
+	grunt.registerTask('watch', [
+		'concurrent:watch'
+	]);
 
 	grunt.registerTask('compile:js:dev', [
 		'browserify:dev'
